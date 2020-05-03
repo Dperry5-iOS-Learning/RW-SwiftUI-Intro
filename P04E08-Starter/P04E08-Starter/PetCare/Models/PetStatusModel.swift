@@ -27,44 +27,15 @@
 /// THE SOFTWARE.
 
 import SwiftUI
-import MapKit
 
-struct LocationMap: UIViewRepresentable {
-    
-  var mouseSpotting: MouseLocation
-    
-    func makeUIView(context: Context) -> MKMapView {
-        let map = MKMapView(frame: .zero)
-        map.delegate = context.coordinator
-        return map
-    }
-    
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<LocationMap>) {
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: mouseSpotting.coordinate, span: span)
-        uiView.setRegion(region, animated: true)
-
-    }
-    
-    func makeCoordinator() -> LocationCoordinator {
-        LocationCoordinator(self)
-    }
-    
+enum Mood: Int, CaseIterable, Hashable {
+  case uncatty = 1
+  case normal
+  case happy
 }
 
-extension LocationMap {
-    class LocationCoordinator: NSObject, MKMapViewDelegate {
-        var mapView: LocationMap
-        
-        init(_ mapView: LocationMap){
-            self.mapView = mapView
-        }
-        
-        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("Finished Rendering Map")
-        }
-        
-    }
+struct PetStatusModel: Identifiable {
+  var id = UUID()
+  var mood: Mood
+  var date: Date
 }
-
-

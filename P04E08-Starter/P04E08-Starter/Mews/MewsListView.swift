@@ -28,62 +28,69 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+
+struct MewsListView : View {
   
   @State private var isPresented = false
+  @State private var isFilteringLovedPosts: Bool = false
+  @State private var posts: [MewsPost] = MewsPost.demoPosts
   
   var body: some View {
     NavigationView {
-      if verticalSizeClass != .regular {
+      List {
         HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+          Toggle(isOn: $isFilteringLovedPosts) {
+            Text(verbatim: "Show loved posts only")
           }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        
+        ForEach(posts) { post in
+          if !self.isFilteringLovedPosts || post.reaction == .love {
+            MewsRow(post: post)
+          }
+        }
       }
+      .navigationBarTitle(Text(verbatim: "Cat Mews"))
+        .navigationBarItems(trailing:
+          Button(action: {
+            self.isPresented.toggle()
+          }, label: {
+            Text(verbatim: "Tutorial")
+          })
+      )
     }
     .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
+        PageView(self.makeOnboardingViews())
     })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+extension MewsListView {
+  func makeOnboardingViews() -> [OnboardingView] {
+    
+    return [
+      OnboardingView(
+        model: OnBoardingModel(
+          image: Image("Onboarding3"),
+          title: Text(verbatim: "Read the Cat 'Mews'"),
+          description: Text(verbatim: "All the latest neighbourhood Mews delivered strait to CatKit as part of the service! React, Like and Read!"))
+      ), OnboardingView(
+        model: OnBoardingModel(
+          image: Image("Onboarding2"),
+          title: Text(verbatim: "Browse the 'Cat-alogue'"),
+          description: Text(verbatim: "Fancy spending your human pet's hard-earned money? We've no shortage of kitty treats available for your perusal."))
+      ), OnboardingView(
+        model: OnBoardingModel(
+          image: Image("Onboarding1"),
+          title: Text(verbatim: "Monitor your human pet"),
+          description: Text(verbatim: "Monitor the health of your human pet. If they get out of line, request a replacement from Paw Enforcement."))
+      )
+    ]
+  }
+}
+
+struct MewsListView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    MewsListView()
   }
 }

@@ -27,63 +27,64 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import Combine
 
-struct PetCareView : View {
+struct SettingsView : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+  private let coverageLevels = ["'They'll Live'", "'They Can Stay'", "'9 Lives'"]
   
-  @State private var isPresented = false
+  @State private var insuranceOrder = InsuranceOrder()
+  @State private var settings = SettingsModel()
+  
+  @EnvironmentObject var petPreferences: PetPreferences
   
   var body: some View {
+    
     NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+      Form {
+        Section {
+          TemperatureRow(settings: $settings)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
+        
+        Section {
+          if !insuranceOrder.hasUpgraded {
+            Toggle(isOn: $settings.isInsuranceRequired) {
+              Text(verbatim: "Is insurance required?")
+            }
             
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+            if settings.isInsuranceRequired {
+              PetInsuranceRow(
+                settings: $settings,
+                insuranceOrder: $insuranceOrder)
+                .accessibility(label: Text(verbatim: "Pet Insurance Selection"))
+              
+              DatePicker(selection: $insuranceOrder.fromDate) {
+                Text(verbatim: "Cover Start Date")
+              }
+              
+              DatePicker(selection: $insuranceOrder.toDate) {
+                Text(verbatim: "Cover End Date")
+              }
+              
+            }
+            
+          } else {
+            Text(verbatim: "Order Received: You are now covered!")
           }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        
+        Section {
+          PetReplacementRow(selectedOwnerindex: $petPreferences.selectedPetIndex)
+            .accessibility(label: Text(verbatim: "Pet Replacement Selection"))
+        }
       }
+      .navigationBarTitle(Text(verbatim: "Settings"), displayMode: .inline)
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct SettingsView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    SettingsView()
   }
 }

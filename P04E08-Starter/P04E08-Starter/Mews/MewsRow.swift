@@ -28,62 +28,48 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct MewsRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  @ObservedObject var post: MewsPost
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
+    
+    NavigationLink(destination: MewsDetailView(post: post)) {
+      VStack(alignment: .leading) {
+        Text(post.title)
+          .font(.headline)
+          .fontWeight(.bold)
+          .padding(.top)
+        
+        Image(post.imageName)
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .cornerRadius(10)
+          .frame(height: 220)
+          .clipped()
+        
         HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
           
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+          MewsAuthorView(post: post)
+          
+          Picker("Reaction", selection: $post.reaction) {
+            ForEach(Reaction.allCases, id: \.self) { reaction in
+              Text(reaction.rawValue).tag(reaction)
+            }
           }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
+          .pickerStyle(SegmentedPickerStyle())
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        .padding(.bottom)
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MewsRow_Previews : PreviewProvider {
+  
+  @ObservedObject static var bindingPost = MewsPost.demoPosts.randomElement()!
+  
   static var previews: some View {
-    PetCareView()
+    MewsRow(post: self.bindingPost)
   }
 }

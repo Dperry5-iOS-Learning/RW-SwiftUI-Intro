@@ -28,62 +28,46 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct PetReplacementRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+  private let pets = HumanPet.demoData
   
-  @State private var isPresented = false
+  @Binding var selectedOwnerindex: Int
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
+    Picker(selection: $selectedOwnerindex, label: Text(verbatim: "Replace Pet")) {
+      // We can also access elements using ForEach and indexes
+      ForEach(0..<pets.count) { iteration in
+        VStack(alignment: .leading) {
+          self.pets[iteration].image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 120)
+            .mask(
+              Image("CatMaskImage")
+                .resizable()
+          )
           
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+          Text(self.pets[iteration].name)
+            .foregroundColor(.rayWenderlichGreen)
+            .padding([.leading, .trailing], 8)
+            .padding([.top, .bottom], 3)
+            .background(Color.primary)
+            .cornerRadius(20)
+          
+          Text(self.pets[iteration].favoriteHobby)
+            .font(.body)
+            .lineLimit(nil)
+            .truncationMode(.tail)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        .tag(iteration)
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
-  static var previews: some View {
-    PetCareView()
-  }
+struct PetReplacementRow_Previews: PreviewProvider {
+    static var previews: some View {
+      PetReplacementRow(selectedOwnerindex: .constant(1))
+    }
 }

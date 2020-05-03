@@ -28,62 +28,46 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct MewsChatRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  var chat: Chat
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+    HStack(alignment: .top) {
+      
+      Image(chat.author.model.imageName)
+        .resizable()
+        .scaledToFill()
+        .frame(width: 50, height: 50)
+        .clipShape(Circle())
+        .shadow(radius: 2)
+      
+      VStack(alignment: .leading, spacing: 5) {
+        Text(chat.content)
+          .font(.footnote)
+          .foregroundColor(Color.white)
+          .lineLimit(nil)
+        
+        Text(chat.chatDate.formatted)
+          .font(Font.system(size: 10, design: .monospaced))
+          .foregroundColor(Color.white)
       }
+      .padding()
+        .background(Color.rayWenderlichGreen)
+        .cornerRadius(25)
+      
+      Spacer()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MewsChatRow_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    MewsChatRow(
+      chat: Chat(
+        author: UserType.allCases.randomElement()!.model.type,
+        content: "Comment",
+        chatDate: Date())
+    )
   }
 }

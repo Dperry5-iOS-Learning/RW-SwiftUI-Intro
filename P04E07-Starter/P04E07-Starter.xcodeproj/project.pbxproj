@@ -32,6 +32,7 @@
 		510CD8C7230D3287009B9A75 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CD89A230D3287009B9A75 /* SettingsModel.swift */; };
 		510CD8C8230D3287009B9A75 /* InsuranceOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CD89B230D3287009B9A75 /* InsuranceOrder.swift */; };
 		510CD8C9230D3287009B9A75 /* TemperatureRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510CD89C230D3287009B9A75 /* TemperatureRow.swift */; };
+		7956DAA6245F1E610059B75F /* MouseAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7956DAA5245F1E610059B75F /* MouseAlertView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,7 @@
 		510CD89A230D3287009B9A75 /* SettingsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		510CD89B230D3287009B9A75 /* InsuranceOrder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InsuranceOrder.swift; sourceTree = "<group>"; };
 		510CD89C230D3287009B9A75 /* TemperatureRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemperatureRow.swift; sourceTree = "<group>"; };
+		7956DAA5245F1E610059B75F /* MouseAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseAlertView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				510CD74A230D2CAA009B9A75 /* LaunchScreen.storyboard */,
 				510CD74D230D2CAA009B9A75 /* Info.plist */,
 				510CD747230D2CAA009B9A75 /* Preview Content */,
+				7956DAA5245F1E610059B75F /* MouseAlertView.swift */,
 			);
 			path = "P04E07-Starter";
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				510CD742230D2CAA009B9A75 /* SceneDelegate.swift in Sources */,
 				510CD8A3230D3287009B9A75 /* PetCareView.swift in Sources */,
 				510CD8A1230D3287009B9A75 /* PetCareStatusView.swift in Sources */,
+				7956DAA6245F1E610059B75F /* MouseAlertView.swift in Sources */,
 				510CD8C9230D3287009B9A75 /* TemperatureRow.swift in Sources */,
 				510CD8A6230D3287009B9A75 /* PetProfileImage.swift in Sources */,
 				510CD744230D2CAA009B9A75 /* ContentView.swift in Sources */,

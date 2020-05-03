@@ -77,7 +77,7 @@ struct PetCareView : View {
       }
     }
     .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
+      Text("Find the mice!")
     })
   }
 }

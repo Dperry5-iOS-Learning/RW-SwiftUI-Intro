@@ -28,62 +28,47 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct OnBoardingModel {
+  var image: Image
+  var title: Text
+  var description: Text
+}
+
+struct OnboardingView : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  // We are using a simple, static model dependency here. As no mutations occur, the @State is not required
+  var model: OnBoardingModel
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
+    VStack(alignment: .center, spacing: 15) {      
+      model.image
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .cornerRadius(15)
+        .padding()
+      
+      model.title
+        .font(Font.system(size: 32, design: .rounded))
+        .foregroundColor(.primary)
+      
+      model.description
+        .font(.body)
+        .foregroundColor(.secondary)
+        .lineLimit(nil)
+        .padding()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+      .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+      .padding()
+      .background(Color.rayWenderlichGreen)
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct OnboardingView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    OnboardingView(
+      model: OnBoardingModel(
+        image: Image("News1"),
+        title: Text(verbatim: "Preview"),
+        description: Text(verbatim: "Content")))
   }
 }

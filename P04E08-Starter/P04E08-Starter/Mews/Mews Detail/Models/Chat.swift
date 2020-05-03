@@ -27,44 +27,21 @@
 /// THE SOFTWARE.
 
 import SwiftUI
-import MapKit
 
-struct LocationMap: UIViewRepresentable {
-    
-  var mouseSpotting: MouseLocation
-    
-    func makeUIView(context: Context) -> MKMapView {
-        let map = MKMapView(frame: .zero)
-        map.delegate = context.coordinator
-        return map
-    }
-    
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<LocationMap>) {
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: mouseSpotting.coordinate, span: span)
-        uiView.setRegion(region, animated: true)
-
-    }
-    
-    func makeCoordinator() -> LocationCoordinator {
-        LocationCoordinator(self)
-    }
-    
+struct Chat: Identifiable {
+  var id = UUID()
+  var author: UserType
+  var content: String
+  var chatDate: Date
 }
 
-extension LocationMap {
-    class LocationCoordinator: NSObject, MKMapViewDelegate {
-        var mapView: LocationMap
-        
-        init(_ mapView: LocationMap){
-            self.mapView = mapView
-        }
-        
-        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("Finished Rendering Map")
-        }
-        
-    }
+extension Chat {
+  static let demoChats = [
+    Chat(author: UserType.allCases.randomElement()!, content: "Just love this purrrfect post!", chatDate: Date()),
+    Chat(author: UserType.allCases.randomElement()!, content: "Seriously? What is with humans these days anyway? So hyperactive!", chatDate: Date()),
+    Chat(author: UserType.allCases.randomElement()!, content: "Literally spent the entire day on the couch... time for another cat nap...", chatDate: Date()),
+    Chat(author: UserType.allCases.randomElement()!, content: "Did I hear that a mouse wrote this?", chatDate: Date()),
+    Chat(author: UserType.allCases.randomElement()!, content: "Hillarious!", chatDate: Date()),
+    Chat(author: UserType.allCases.randomElement()!, content: "Why won't felines just tell humans this?", chatDate: Date())
+  ]
 }
-
-

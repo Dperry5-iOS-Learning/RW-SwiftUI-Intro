@@ -28,62 +28,50 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+struct MewsSocialView : View {
+  @State private var isShared = false
+  @ObservedObject var post: MewsPost
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+    HStack {
+      Button(action: {
+        withAnimation {
+          self.post.isLiked.toggle()
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+      }) {
+        Text(verbatim: "Like 👍")
+          .foregroundColor(Color.primary)
+          .padding([.leading, .trailing], 10)
+          .padding([.top, .bottom], 5)
+          .background(Color.secondary)
+          .cornerRadius(5)
+          .border(Color.primary, width: 3)
+          .cornerRadius(5)
+          .opacity(self.post.isLiked ? 1 : 0.5)
+          .saturation(self.post.isLiked ? 1 : 0.5)
+      }
+      
+      Button(action: {
+        self.isShared = true
+      }) {
+        Text(verbatim: "Share 🎉")
+          .foregroundColor(Color.primary)
+          .padding([.leading, .trailing], 10)
+          .padding([.top, .bottom], 5)
+          .background(Color.secondary)
+          .cornerRadius(5)
+          .border(Color.white, width: 3)
+          .cornerRadius(5)
+      }
+      .alert(isPresented: self.$isShared) {
+        Alert(title: Text("Shared"))
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MewsSocialView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    MewsSocialView(post: MewsPost.demoPosts.randomElement()!)
   }
 }

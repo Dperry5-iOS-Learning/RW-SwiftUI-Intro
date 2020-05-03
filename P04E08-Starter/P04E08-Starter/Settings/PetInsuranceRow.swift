@@ -28,62 +28,46 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct PetInsuranceRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+  private let coverageLevels = ["'They'll Live'", "'They Can Stay'", "'9 Lives'"]
   
-  @State private var isPresented = false
+  @Binding var settings: SettingsModel
+  @Binding var insuranceOrder: InsuranceOrder
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+    VStack {
+      VStack {
+        Text(verbatim: "Coverage Level:")
+        Slider(value: $insuranceOrder.coverageLevel, in: (0...100))
+          .padding()
+        Text(verbatim: "Coverage level : \(comment(for: insuranceOrder.coverageLevel))")
+          .font(Font.system(size: 22, design: .rounded))
+          .foregroundColor(Color.rayWenderlichGreen)
+          .padding()
+      }
+      
+      Button(action: {
+        withAnimation {
+          self.insuranceOrder.hasUpgraded.toggle()
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+      }) {
+        Text(verbatim: "Place Order")
+          .font(Font.system(size: 22, design: .rounded))
+          .foregroundColor(.white)
+          .padding()
+          .background(Color.rayWenderlichGreen)
+          .padding()
+          .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
-  static var previews: some View {
-    PetCareView()
+extension PetInsuranceRow {
+  /// Method to get the comment from the array with a Slider value
+  private func comment(for rating: Double) -> String {
+    let rounded = Int(round((rating / 10))) / (coverageLevels.count + 1)
+    return coverageLevels[rounded]
   }
 }

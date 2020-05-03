@@ -28,62 +28,48 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct LocationView : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+  @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
   
-  @State private var isPresented = false
+  var mouseLocation: MouseLocation
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+    
+    VStack {
+      LocationMap(mouseSpotting: mouseLocation)
+        .mask(Image("Mouse Watch")
+          .resizable()
+          .aspectRatio(contentMode:. fit))
+          .shadow(radius: 10)
+          .padding()
+      
+      Text(verbatim: "🐭 \(mouseLocation.description) 🐭")
+        .font(Font.system(.title, design: .rounded))
+        .lineLimit(nil)
+      
+      Button(action: {
+        self.presentationMode.wrappedValue.dismiss()
+      }) {
+        Text(verbatim: "Assign to me")
+          .foregroundColor(.white)
+          .fontWeight(.bold)
+          .frame(minWidth: 0, maxWidth: .infinity)
+          .padding()
+          .background(Color.red)
+          .cornerRadius(20)
+          .padding()
       }
+      
+      Spacer()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    .background(Color.rayWenderlichGreen)
+    .navigationBarTitle(Text(mouseLocation.description), displayMode: .inline)
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
-  static var previews: some View {
-    PetCareView()
-  }
+struct LocationView_Previews: PreviewProvider {
+    static var previews: some View {
+      LocationView(mouseLocation: MouseLocation.demoData.randomElement()!)
+    }
 }

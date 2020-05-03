@@ -26,45 +26,32 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import SwiftUI
-import MapKit
+import UIKit
 
-struct LocationMap: UIViewRepresentable {
-    
-  var mouseSpotting: MouseLocation
-    
-    func makeUIView(context: Context) -> MKMapView {
-        let map = MKMapView(frame: .zero)
-        map.delegate = context.coordinator
-        return map
-    }
-    
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<LocationMap>) {
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: mouseSpotting.coordinate, span: span)
-        uiView.setRegion(region, animated: true)
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    }
-    
-    func makeCoordinator() -> LocationCoordinator {
-        LocationCoordinator(self)
-    }
-    
+
+
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // Override point for customization after application launch.
+    return true
+  }
+
+  // MARK: UISceneSession Lifecycle
+
+  func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+    // Called when a new scene session is being created.
+    // Use this method to select a configuration to create the new scene with.
+    return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+  }
+
+  func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+    // Called when the user discards a scene session.
+    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+  }
+
+
 }
-
-extension LocationMap {
-    class LocationCoordinator: NSObject, MKMapViewDelegate {
-        var mapView: LocationMap
-        
-        init(_ mapView: LocationMap){
-            self.mapView = mapView
-        }
-        
-        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("Finished Rendering Map")
-        }
-        
-    }
-}
-
 

@@ -28,62 +28,26 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct PetBioRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  @State var hobbyText: String
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
+    
+    VStack {
+      Text(verbatim: "Favorite Hobby:")
+        .font(Font.system(.body, design: .rounded))
+      
+      TextField("Favorite Hobby Text", text: $hobbyText)
+        .lineLimit(nil)
+        .padding()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    .textFieldStyle(RoundedBorderTextFieldStyle())
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct PetBioRow_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    PetBioRow(hobbyText: "Bio Text")
   }
 }

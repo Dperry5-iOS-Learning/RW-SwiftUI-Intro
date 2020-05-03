@@ -26,45 +26,27 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+import UIKit
 import SwiftUI
-import MapKit
 
-struct LocationMap: UIViewRepresentable {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+  
+  var window: UIWindow?
+  var petPreferences = PetPreferences()
+  
+  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
     
-  var mouseSpotting: MouseLocation
-    
-    func makeUIView(context: Context) -> MKMapView {
-        let map = MKMapView(frame: .zero)
-        map.delegate = context.coordinator
-        return map
+    // Use a UIHostingController as window root view controller
+    if let windowScene = scene as? UIWindowScene {
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIHostingController(rootView: ContentView().environmentObject(petPreferences))
+        self.window = window
+        window.makeKeyAndVisible()
     }
-    
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<LocationMap>) {
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: mouseSpotting.coordinate, span: span)
-        uiView.setRegion(region, animated: true)
-
-    }
-    
-    func makeCoordinator() -> LocationCoordinator {
-        LocationCoordinator(self)
-    }
-    
-}
-
-extension LocationMap {
-    class LocationCoordinator: NSObject, MKMapViewDelegate {
-        var mapView: LocationMap
-        
-        init(_ mapView: LocationMap){
-            self.mapView = mapView
-        }
-        
-        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("Finished Rendering Map")
-        }
-        
-    }
+  }
 }
 
 

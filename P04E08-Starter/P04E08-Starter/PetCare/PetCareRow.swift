@@ -27,63 +27,63 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import Combine
 
-struct PetCareView : View {
+struct PetCareRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
+  @State private var showMoods = false
+  var petModel: HumanPet
   
-  @State private var isPresented = false
+  var transition: AnyTransition {
+    let insertion = AnyTransition.move(edge: .trailing)
+      .combined(with: .opacity)
+    let removal = AnyTransition.slide
+      .combined(with: .opacity)
+    return .asymmetric(insertion: insertion, removal: removal)
+  }
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+    
+    VStack(alignment: .center, spacing: 10) {
+      
+      if petModel.moods.count > 0 {
+        Text(verbatim: "Pet's Mood This Week")
+          .font(Font.system(.title, design: .rounded))
+        
+        Button(action: {
+          withAnimation {
+            self.showMoods.toggle()
           }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
+        }) {
+          Image(systemName: showMoods ? "plus.app.fill" : "plus.app")
+            .imageScale(.large)
+            .rotationEffect(.degrees(showMoods ? 90 : 0))
+            .scaleEffect(showMoods ? 1.5 : 1)
+            .padding()
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        
+        if showMoods {
+          PetCareStatusView(petStatusModels: petModel.moods)
+            .padding()
+            .transition(self.transition)
+        }
+      } else {
+        Text(verbatim: "Sorry, no data to show yet.")
+          .font(Font.system(.title, design: .rounded))
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    .padding()
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct PetCareRow_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    PetCareRow(
+      petModel: HumanPet(
+        image: Image("Cat Food 1"),
+        name: "Laurie",
+        favoriteHobby: "Learning SwiftUI",
+        moods: [])
+    )
   }
 }

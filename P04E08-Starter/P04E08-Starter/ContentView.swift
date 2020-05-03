@@ -28,62 +28,43 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+struct ContentView : View {
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+    
+    TabView {
+      MewsListView()
+        .tabItem {
+          VStack {
+            Image(systemName: "square.stack.fill")
+              .renderingMode(.original)
+            Text(verbatim: "Mews")
           }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
+      }.tag(1)
+      
+      PetCareView()
+        .tabItem {
+          VStack {
+            Image(systemName: "person.crop.circle")
+              .renderingMode(.original)
+            Text(verbatim: "PetCare")
+          }
+      }.tag(3)
+      
+      SettingsView()
+        .tabItem {
+          VStack {
+            Image(systemName: "gear")
+              .renderingMode(.original)
+            Text(verbatim: "Settings")
+          }
+      }.tag(4)
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct ContentView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    ContentView()
   }
 }

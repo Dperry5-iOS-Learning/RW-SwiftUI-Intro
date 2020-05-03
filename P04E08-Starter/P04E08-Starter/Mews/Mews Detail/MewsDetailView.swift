@@ -28,62 +28,49 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct MewsDetailView : View {
   
+  @ObservedObject var post: MewsPost
   @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
+    
+    GeometryReader { proxy in
+      VStack(alignment: .center) {
+        // Hide the image when there is less vertical room
+        if self.verticalSizeClass == .regular {
           
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+          Image(self.post.imageName)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .cornerRadius(20)
+            .frame(height: 250)
+            .padding()
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
+        
         VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
+          ScrollView {
+            Text(self.post.content)
+              .font(.body)
+              .lineLimit(nil)
+              .frame(minWidth: 0, idealWidth: proxy.size.width, minHeight: 200, maxHeight: 300)
+              .padding([.leading, .trailing])
           }
           
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
+          MewsSocialView(post: self.post)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+        
+        MewsChatView(chats: self.post.chats)
+        
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: Alignment.topLeading)   
+      .navigationBarTitle(Text(post.title), displayMode: .inline)
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MewsDetailView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    MewsDetailView(post: MewsPost.demoPosts.randomElement()!)
   }
 }

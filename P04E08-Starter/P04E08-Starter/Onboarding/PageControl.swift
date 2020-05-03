@@ -27,44 +27,38 @@
 /// THE SOFTWARE.
 
 import SwiftUI
-import MapKit
+import UIKit
 
-struct LocationMap: UIViewRepresentable {
+struct PageControl: UIViewRepresentable {
+    @Binding var currentPage: Int
+    var pageCount: Int
     
-  var mouseSpotting: MouseLocation
-    
-    func makeUIView(context: Context) -> MKMapView {
-        let map = MKMapView(frame: .zero)
-        map.delegate = context.coordinator
-        return map
-    }
-    
-    func updateUIView(_ uiView: MKMapView, context: UIViewRepresentableContext<LocationMap>) {
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-        let region = MKCoordinateRegion(center: mouseSpotting.coordinate, span: span)
-        uiView.setRegion(region, animated: true)
+  func makeUIView(context: Context) -> UIPageControl {
+    let pageControl = UIPageControl()
+    pageControl.numberOfPages = pageCount
+    pageControl.addTarget(context.coordinator, action: #selector(PageCoordinator.updateCurrentPage(sender:)), for: .valueChanged)
+    return pageControl
+  }
 
-    }
+  func updateUIView(_ uiView: UIPageControl, context: Context) {
+    uiView.currentPage = currentPage
+  }
     
-    func makeCoordinator() -> LocationCoordinator {
-        LocationCoordinator(self)
-    }
-    
-}
-
-extension LocationMap {
-    class LocationCoordinator: NSObject, MKMapViewDelegate {
-        var mapView: LocationMap
-        
-        init(_ mapView: LocationMap){
-            self.mapView = mapView
-        }
-        
-        func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
-            print("Finished Rendering Map")
-        }
-        
+    func makeCoordinator() -> PageCoordinator {
+        return PageCoordinator(self)
     }
 }
 
-
+extension PageControl {
+    class PageCoordinator: NSObject {
+        var control: PageControl
+        
+        init(_ control: PageControl){
+            self.control = control
+        }
+        
+        @objc func updateCurrentPage(sender: UIPageControl){
+            control.currentPage = sender.currentPage
+        }
+    }
+}

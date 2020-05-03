@@ -28,62 +28,29 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+struct PetProfileImage : View {
+  var humanPet: HumanPet
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
-    }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    humanPet.image
+      .resizable()
+      .aspectRatio(contentMode: .fit)
+      .cornerRadius(25)
+      .mask(Image("CatMaskImage")
+        .resizable()
+        .scaledToFit())
+      .shadow(radius: 10)
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct PetProfileImage_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    PetProfileImage(
+      humanPet: HumanPet(
+        image: Image("News1"),
+        name: "Name",
+        favoriteHobby: "Hobby",
+        moods: [])
+    )
   }
 }

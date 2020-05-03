@@ -28,62 +28,26 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct PetCareStatusView : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  var petStatusModels: [PetStatusModel]
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
+    
+    return GeometryReader { proxy in
+      HStack(alignment: .bottom) {
+        ForEach(self.petStatusModels) { model in
+          MoodRectangleView(mood: model.mood, height: proxy.size.height)
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
       }
+      .padding()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct PetCareStatusView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    PetCareStatusView(petStatusModels: [])
   }
 }

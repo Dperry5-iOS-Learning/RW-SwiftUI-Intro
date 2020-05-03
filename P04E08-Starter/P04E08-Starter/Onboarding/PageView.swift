@@ -28,62 +28,21 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+struct PageView<Page: View>: View {
+    
+    var viewControllers: [UIHostingController<Page>]
+    @State private var currentPage = 0
+    init(_ views: [Page]){
+        self.viewControllers = views.map { UIHostingController(rootView: $0)
+        }
+        
+    }
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
+    ZStack(alignment: .bottom) {
+        PageViewController(controllers: viewControllers, currentPage: $currentPage)
+        PageControl(currentPage: $currentPage, pageCount: viewControllers.count)
+            .padding(.trailing)
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
-  }
-}
-
-struct PetCareView_Previews : PreviewProvider {
-  static var previews: some View {
-    PetCareView()
   }
 }

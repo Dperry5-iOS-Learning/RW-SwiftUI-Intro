@@ -28,62 +28,37 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct MewsAuthorView: View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  @ObservedObject var post: MewsPost
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
+    HStack {
+      Image(post.author.imageName)
+        .resizable()
+        .frame(width: 50, height: 50)
+        .clipShape(Circle())
+      
+      VStack(alignment: .leading) {
+        Text(post.author.type.rawValue)
+          .font(.callout)
+        
+        Text("\(post.postDate.formatted)")
+          .foregroundColor(.rayWenderlichGreen)
+          .font(.footnote)
       }
+      
+      Spacer()
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+    
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MewsAuthorView_Previews: PreviewProvider {
+  
+  @State private static var post = MewsPost.demoPosts.randomElement()!
+  
   static var previews: some View {
-    PetCareView()
+    MewsAuthorView(post: post)
   }
 }

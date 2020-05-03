@@ -28,62 +28,42 @@
 
 import SwiftUI
 
-struct PetCareView : View {
+struct TemperatureRow : View {
   
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
+  @Binding var settings: SettingsModel
   
   var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
+    VStack {
+      Toggle(isOn: $settings.isTemperatureControlActive) {
+        Text(verbatim: "Activate Home Heating Override")
+      }
+      
+      if $settings.isTemperatureControlActive.wrappedValue {
         VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
+          Text(verbatim: "Set Temperature")
+          Text(verbatim: "Desired Temperature \(formatted(temperature: $settings.desiredTemperature.wrappedValue)) •F")
+          Slider(value: $settings.desiredTemperature, in: (20...120))
+            .accessibility(value: Text("Temperature Value \($settings.desiredTemperature.wrappedValue) degrees fahrenheit"))
         }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
       }
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
-  static var previews: some View {
-    PetCareView()
+extension TemperatureRow {
+  /// A convenience method to format the degrees Text from a Double
+  func formatted(temperature: Double) -> String {
+    return String(format: "%g", round(temperature))
   }
+}
+
+struct TemperatureRow_Previews: PreviewProvider {
+  static var settingsModel = SettingsModel(
+    isInsuranceRequired: true,
+    isTemperatureControlActive: true,
+    desiredTemperature: 32
+  )
+    static var previews: some View {
+      TemperatureRow(settings: .constant(settingsModel))
+    }
 }

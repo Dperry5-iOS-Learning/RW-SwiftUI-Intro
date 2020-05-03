@@ -28,62 +28,36 @@
 
 import SwiftUI
 
-struct PetCareView : View {
-  
-  @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-  @EnvironmentObject var petModel: PetPreferences
-  
-  @State private var isPresented = false
-  
-  var body: some View {
-    NavigationView {
-      if verticalSizeClass != .regular {
-        HStack {
-          PetProfileImage(humanPet: petModel.selectedPet)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-            .frame(width: 200)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .large)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      } else {
-        VStack {
-          VStack(alignment: .center) {
-            PetProfileImage(humanPet: petModel.selectedPet)
-            
-            Text(petModel.selectedPet.name)
-              .font(Font.system(size: 32, design: .rounded))
-              .foregroundColor(.rayWenderlichGreen)
-          }
-          
-          PetBioRow(hobbyText: petModel.selectedPet.favoriteHobby)
-          
-          PetCareRow(petModel: petModel.selectedPet)
-        }
-        .navigationBarTitle(Text(verbatim: "Pet Care"), displayMode: .inline)
-          .navigationBarItems(
-            trailing: Button(action: {
-              self.isPresented.toggle()
-            }, label: {
-              Text(verbatim: "Mouse Alert!")
-            })
-        )
-      }
+struct MoodRectangleView : View {
+
+  var mood: Mood
+
+  var height: CGFloat
+
+  var calculatedHeight: CGFloat {
+    (height / CGFloat(Mood.allCases.count)) * CGFloat(mood.rawValue)
+  }
+
+  var color: Color {
+    switch mood {
+    case .happy:
+      return Color.green
+    case .normal:
+      return Color.yellow
+    case .uncatty:
+      return Color.red
     }
-    .sheet(isPresented: self.$isPresented, content: {
-      MouseAlertView()
-    })
+  }
+
+  var body: some View {
+    Rectangle()
+      .fill(color)
+      .frame(height: calculatedHeight, alignment: .bottom)
   }
 }
 
-struct PetCareView_Previews : PreviewProvider {
+struct MoodRectangleView_Previews : PreviewProvider {
   static var previews: some View {
-    PetCareView()
+    MoodRectangleView(mood: .happy, height: 200)
   }
 }
